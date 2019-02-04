@@ -6,6 +6,8 @@ using Foodmart.Models;
 using Foodmart.OSDB;
 using System;
 using Foodmart.ViewModels;
+using System.Collections.Generic;
+using PagedList;
 
 namespace Foodmart.Controllers
 {
@@ -14,7 +16,7 @@ namespace Foodmart.Controllers
         private StoreContext db = new StoreContext();
 
         // GET: Products
-        public ActionResult Index(string department, string search)
+        public ActionResult Index(string department, string search, string sortBy,int? page)
         {
             ProductIndexViewModel viewModel = new ProductIndexViewModel();
 
@@ -41,12 +43,30 @@ namespace Foodmart.Controllers
             if (!String.IsNullOrEmpty(department))
             {
                 products = products.Where(p => p.Department.Name == department);
+                viewModel.Department = department;
+            }
+            switch (sortBy)
+            {
+                case "price_lowest":
+                    products = products.OrderBy(p => p.Price);
+                    break;
+                case "price_highest":
+                    products = products.OrderByDescending(p => p.Price);
+                    break;
+                default:
+                    products = products.OrderBy(p => p.Name);
+                    break;
             }
 
-            //ViewBag.Department = new SelectList(departments);
-            //return View(products.ToList());
-
-            viewModel.Products = products;
+            const int PageItems = 10;
+            int currentPage = (page ?? 1);
+            viewModel.Products = products.ToPagedList(currentPage, PageItems);
+            viewModel.SortBy = sortBy;
+            viewModel.Sorts = new Dictionary<string, string>
+            {
+                {"Price low to high", "price_lowest" },
+                {"Price high to low", "price_highest" }
+            };
             return View(viewModel);
         }
 

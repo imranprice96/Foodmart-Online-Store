@@ -1,5 +1,5 @@
-﻿@*@model IEnumerable<Foodmart.Models.Product>*@
-@model Foodmart.ViewModels.ProductIndexViewModel
+﻿@model Foodmart.ViewModels.ProductIndexViewModel
+@using PagedList.Mvc
 
 @{
     ViewBag.Title = "Products";
@@ -8,11 +8,14 @@
 <h2>ViewBag.Title</h2>
 
 <p>
+    @(String.IsNullOrWhiteSpace(Model.Search) ? "Showing all" : "You search for " + Model.Search + " found") @Model.Products.TotalItemCount products
     @Html.ActionLink("Create New", "Create")
     @using (Html.BeginForm("Index", "Products", FormMethod.Get))
     {
         <label>Filter by department:</label>
         @Html.DropDownListFor(vm => vm.Department, Model.DepFilterItems, "All");
+        <label>Sort By:</label>
+        @Html.DropDownListFor(vm => vm.SortBy, new SelectList(Model.Sorts, "Value", "Key"), "Default")
         <input type="submit" value="Filter" />
         <input type="hidden" name="Search" id="Search" value="@Model.Search" />
     }
@@ -57,3 +60,13 @@
 }
 
 </table>
+<div>
+    Page @(Model.Products.PageCount < Model.Products.PageNumber ? 0 : Model.Products.PageNumber) of @Model.Products.PageCount
+    @Html.PagedListPager(Model.Products, page => Url.Action("Index", new
+{
+    category = @Model.Department,
+    Search = @Model.Search,
+    sortBy = @Model.SortBy,
+    page
+}))
+</div>

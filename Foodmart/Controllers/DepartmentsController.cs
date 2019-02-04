@@ -108,6 +108,13 @@ namespace Foodmart.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Department department = db.Departments.Find(id);
+            foreach (var p in department.Products)
+
+            {
+
+                p.DepartmentID = null;
+
+            }
             db.Departments.Remove(department);
             db.SaveChanges();
             return RedirectToAction("Index");
