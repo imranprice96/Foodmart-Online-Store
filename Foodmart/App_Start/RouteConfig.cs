@@ -12,7 +12,31 @@ namespace Foodmart
         public static void RegisterRoutes(RouteCollection routes)
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
-
+            routes.MapRoute(
+                name: "ProductsCreate",
+                url: "Products/Create",
+                defaults: new { controller = "Products", action = "Create" }
+                );
+            routes.MapRoute(
+              name: "ProductsbyDepartmentByPage",
+              url: "Products/{department}/Page{page}",
+              defaults: new { controller = "Products", action = "Index" }
+                );
+            routes.MapRoute(
+               name: "ProductsbyPage",
+               url: "Products/Page{page}",
+               defaults: new { controller = "Products", action = "Index" }
+               );
+            routes.MapRoute(
+                name: "ProductsByDepartment",
+                url: "Products/{department}",
+                defaults: new { controller = "Products", action = "Index" }
+                );
+            routes.MapRoute(
+              name: "ProductsIndex",
+              url: "Products",
+              defaults: new { controller = "Products", action = "Index" }
+              );
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
