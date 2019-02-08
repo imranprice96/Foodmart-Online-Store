@@ -7,13 +7,13 @@ namespace Foodmart.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class update_user_fields : IMigrationMetadata
+    public sealed partial class CreateProductImageMappings : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(update_user_fields));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(CreateProductImageMappings));
         
         string IMigrationMetadata.Id
         {
-            get { return "201902082215040_update_user_fields"; }
+            get { return "201902082015105_CreateProductImageMappings"; }
         }
         
         string IMigrationMetadata.Source

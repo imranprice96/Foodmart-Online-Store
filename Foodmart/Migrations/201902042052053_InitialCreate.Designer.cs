@@ -13,7 +13,7 @@ namespace Foodmart.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201902082134128_InitialCreate"; }
+            get { return "201902042052053_InitialCreate"; }
         }
         
         string IMigrationMetadata.Source
