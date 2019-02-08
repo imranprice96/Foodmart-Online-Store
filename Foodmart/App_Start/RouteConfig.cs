@@ -21,7 +21,7 @@ namespace Foodmart
               name: "ProductsbyDepartmentByPage",
               url: "Products/{department}/Page{page}",
               defaults: new { controller = "Products", action = "Index" }
-                );
+              );
             routes.MapRoute(
                name: "ProductsbyPage",
                url: "Products/Page{page}",

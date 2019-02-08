@@ -7,5 +7,7 @@ namespace Foodmart.OSDB
     {
         public DbSet<Product> Products { get; set; }
         public DbSet<Department> Departments { get; set; }
+        public DbSet<ProductImage> ProductImages { get; set; }
+        public DbSet<ProductImageMapping> ProductImageMappings { get; set; }
     }
 }
