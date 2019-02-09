@@ -12,5 +12,7 @@ namespace Foodmart.OSDB
 
         public System.Data.Entity.DbSet<Foodmart.ViewModels.EditUserViewModel> EditUserViewModels { get; set; }
         public DbSet<BasketLine> BasketLines { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderLine> OrderLines { get; set; }
     }
 }

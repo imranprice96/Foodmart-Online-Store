@@ -6,7 +6,6 @@ namespace Foodmart.Migrations.StoreConfiguration
     using System.Data.Entity;
     using System.Data.Entity.Migrations;
     using System.Linq;
-
     internal sealed class StoreConfiguration : DbMigrationsConfiguration<Foodmart.OSDB.StoreContext>
     {
         public StoreConfiguration()
@@ -14,7 +13,6 @@ namespace Foodmart.Migrations.StoreConfiguration
             AutomaticMigrationsEnabled = false;
             ContextKey = "Foodmart.OSDB.StoreContext";
         }
-
         protected override void Seed(Foodmart.OSDB.StoreContext context)
         {
             var departments = new List<Department>
@@ -29,7 +27,6 @@ namespace Foodmart.Migrations.StoreConfiguration
              };
             departments.ForEach(d => context.Departments.AddOrUpdate(p => p.Name, d));
             context.SaveChanges();
-
             var products = new List<Product>
             {
                 new Product {Name = "Apple", Description = "Gala apples", Price = 0.2m, DepartmentID= departments.Single(d=>d.Name == "Produce").ID},
@@ -49,6 +46,30 @@ namespace Foodmart.Migrations.StoreConfiguration
                 new Product {Name = "Clearwater Cove", Description = "White wine 750ml", Price = 21.99m, DepartmentID= departments.Single(d=>d.Name == "Liquor").ID},
             };
             products.ForEach(d => context.Products.AddOrUpdate(p => p.Name, d));
+            context.SaveChanges();
+            var orders = new List<Order>
+            {
+                 new Order { DeliveryAddress = new Address { AddressLine1="1 Some Street", Town="Town1",
+                 Country="Country", PostCode="PostCode" }, TotalPrice=2.09m,
+                 UserID="admin@example.com", DateCreated=new DateTime(2014, 1, 1) ,
+                 DeliveryName="Admin" },
+                 new Order { DeliveryAddress = new Address { AddressLine1="1 Some Street", Town="Town1",
+                 Country="Country", PostCode="PostCode" }, TotalPrice=12.99m,
+                 UserID="admin@example.com", DateCreated=new DateTime(2014, 1, 1) ,
+                 DeliveryName="Admin" }
+            };
+            orders.ForEach(c => context.Orders.AddOrUpdate(o => o.DateCreated, c));
+            context.SaveChanges();
+            var orderLines = new List<OrderLine>
+            {
+                /*new OrderLine { OrderID = 1, ProductID = products.Single( c=> c.Name == "L").ID,
+                    ProductName ="", Quantity =1, UnitPrice=products.Single( c=> c.Name == "L").Price }*/
+                 new OrderLine { OrderID = 1, ProductID = products.Single( c=> c.Name == "Blue Milk 2L").ID,
+                    ProductName ="Blue Milk 2L", Quantity =1, UnitPrice=products.Single( c=> c.Name == "Blue Milk 2L").Price },
+                 new OrderLine { OrderID = 1, ProductID = products.Single( c=> c.Name == "Corona 12pk").ID,
+                    ProductName ="Corona 12pk", Quantity =1, UnitPrice=products.Single( c=> c.Name == "Corona 12pk").Price }
+            };
+            orderLines.ForEach(c => context.OrderLines.AddOrUpdate(ol => ol.OrderID, c));
             context.SaveChanges();
         }
     }

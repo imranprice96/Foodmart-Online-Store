@@ -213,6 +213,7 @@
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\OrdersController.cs" />
     <Compile Include="Controllers\ProductImagesController.cs" />
     <Compile Include="Controllers\ProductsController.cs" />
     <Compile Include="Controllers\RolesAdminController.cs" />
@@ -236,6 +237,10 @@
     <Compile Include="Migrations\201902090305268_AddBasketLine.Designer.cs">
       <DependentUpon>201902090305268_AddBasketLine.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201902090332391_addorders.cs" />
+    <Compile Include="Migrations\201902090332391_addorders.Designer.cs">
+      <DependentUpon>201902090332391_addorders.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\StoreConfiguration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -245,6 +250,8 @@
     <Compile Include="Models\Department.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\Order.cs" />
+    <Compile Include="Models\OrderLine.cs" />
     <Compile Include="Models\Product.cs" />
     <Compile Include="Models\ProductImage.cs" />
     <Compile Include="Models\ProductImageMapping.cs" />
@@ -262,6 +269,8 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\PagedList.css" />
+    <Content Include="Content\reset.css" />
+    <Content Include="Content\store.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -355,6 +364,11 @@
     <Content Include="Views\Shared\_EditUserPartial.cshtml" />
     <Content Include="Views\Basket\Index.cshtml" />
     <Content Include="Views\Basket\Summary.cshtml" />
+    <Content Include="Views\Orders\Review.cshtml" />
+    <Content Include="Views\Orders\Delete.cshtml" />
+    <Content Include="Views\Orders\Details.cshtml" />
+    <Content Include="Views\Orders\Edit.cshtml" />
+    <Content Include="Views\Orders\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -380,6 +394,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201902090305268_AddBasketLine.resx">
       <DependentUpon>201902090305268_AddBasketLine.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201902090332391_addorders.resx">
+      <DependentUpon>201902090332391_addorders.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
