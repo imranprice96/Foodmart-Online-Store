@@ -8,6 +8,8 @@ using System.Web;
 using Microsoft.Owin;
 using System.ComponentModel.DataAnnotations;
 using System;
+using static Foodmart.ApplicationSignInManager;
+
 namespace Foodmart.Models
 {
     // You can add profile data for the user by adding more properties to your ApplicationUser class, please visit http://go.microsoft.com/fwlink/?LinkID=317594 to learn more.
@@ -62,60 +64,5 @@ namespace Foodmart.Models
             return new ApplicationRoleManager(new RoleStore<IdentityRole>(context.Get<ApplicationDbContext>()));
         }
     }
-    public class ApplicationDbInitializer : DropCreateDatabaseIfModelChanges<ApplicationDbContext>
-    {
-        protected override void Seed(ApplicationDbContext context)
-        {
-            InitializeIdentityForEF(context);
-            base.Seed(context);
-        }
-        private static void InitializeIdentityForEF(ApplicationDbContext context)
-        {
-            var userManager = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>();
-            var roleManager = HttpContext.Current.GetOwinContext().Get<ApplicationRoleManager>();
-            const string name = "admin1@Foodmart.com";
-            const string password = "Admin1@Foodmart.com";
-            const string roleName = "Admin";
-            //Create Role Admin if it does not exist
-            var role = roleManager.FindByName(roleName);
-            if (role == null)
-            {
-                role = new IdentityRole(roleName);
-                var roleresult = roleManager.Create(role);
-            }
-            var user = userManager.FindByName(name);
-            if (user == null)
-            {
-                user = new ApplicationUser
-                {
-                    UserName = name,
-                    Email = name,
-                    FirstName = "Admin",
-                    LastName = "Admin",
-                    DateOfBirth = new DateTime(2015, 1, 1),
-                    Address = new Address
-                    {
-                        AddressLine1 = "1 Admin Road",
-                        Town = "Town",
-                        Country = "Country",
-                        PostCode = "PostCode"
-                    }
-                };
-                var result = userManager.Create(user, password);
-                const string userRoleName = "Users";
-                role = roleManager.FindByName(userRoleName);
-                if (role == null)
-                {
-                    role = new IdentityRole(userRoleName);
-                    var roleresult = roleManager.Create(role);
-                }
-            }
-            //add user admin to role admin if not already added
-            var rolesForUser = userManager.GetRoles(user.Id);
-            if (!rolesForUser.Contains(role.Name))
-            {
-                var result = userManager.AddToRole(user.Id, role.Name);
-            }
-        }
-    }
+   
 }

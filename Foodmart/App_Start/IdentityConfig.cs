@@ -11,7 +11,6 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using Foodmart.Models;
-
 namespace Foodmart
 {
     public class EmailService : IIdentityMessageService
@@ -22,7 +21,6 @@ namespace Foodmart
             return Task.FromResult(0);
         }
     }
-
     public class SmsService : IIdentityMessageService
     {
         public Task SendAsync(IdentityMessage message)
@@ -31,7 +29,6 @@ namespace Foodmart
             return Task.FromResult(0);
         }
     }
-
     // Configure the application user manager used in this application. UserManager is defined in ASP.NET Identity and is used by the application.
     public class ApplicationUserManager : UserManager<ApplicationUser>
     {
@@ -39,7 +36,6 @@ namespace Foodmart
             : base(store)
         {
         }
-
         public static ApplicationUserManager Create(IdentityFactoryOptions<ApplicationUserManager> options, IOwinContext context) 
         {
             var manager = new ApplicationUserManager(new UserStore<ApplicationUser>(context.Get<ApplicationDbContext>()));
@@ -49,7 +45,6 @@ namespace Foodmart
                 AllowOnlyAlphanumericUserNames = false,
                 RequireUniqueEmail = true
             };
-
             // Configure validation logic for passwords
             manager.PasswordValidator = new PasswordValidator
             {
@@ -59,12 +54,10 @@ namespace Foodmart
                 RequireLowercase = true,
                 RequireUppercase = true,
             };
-
             // Configure user lockout defaults
             manager.UserLockoutEnabledByDefault = true;
             manager.DefaultAccountLockoutTimeSpan = TimeSpan.FromMinutes(5);
             manager.MaxFailedAccessAttemptsBeforeLockout = 5;
-
             // Register two factor authentication providers. This application uses Phone and Emails as a step of receiving a code for verifying the user
             // You can write your own provider and plug it in here.
             manager.RegisterTwoFactorProvider("Phone Code", new PhoneNumberTokenProvider<ApplicationUser>
@@ -87,7 +80,6 @@ namespace Foodmart
             return manager;
         }
     }
-
     // Configure the application sign-in manager which is used in this application.
     public class ApplicationSignInManager : SignInManager<ApplicationUser, string>
     {
@@ -95,15 +87,70 @@ namespace Foodmart
             : base(userManager, authenticationManager)
         {
         }
-
         public override Task<ClaimsIdentity> CreateUserIdentityAsync(ApplicationUser user)
         {
             return user.GenerateUserIdentityAsync((ApplicationUserManager)UserManager);
         }
-
         public static ApplicationSignInManager Create(IdentityFactoryOptions<ApplicationSignInManager> options, IOwinContext context)
         {
             return new ApplicationSignInManager(context.GetUserManager<ApplicationUserManager>(), context.Authentication);
+        }
+        public class ApplicationDbInitializer : DropCreateDatabaseIfModelChanges<ApplicationDbContext>
+        {
+            protected override void Seed(ApplicationDbContext context)
+            {
+                InitializeIdentityForEF(context);
+                base.Seed(context);
+            }
+            private static void InitializeIdentityForEF(ApplicationDbContext context)
+            {
+                var userManager = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>();
+                var roleManager = HttpContext.Current.GetOwinContext().Get<ApplicationRoleManager>();
+                const string name = "admin1@Foodmart.com";
+                const string password = "Admin1@Foodmart.com";
+                const string roleName = "Admin";
+                //Create Role Admin if it does not exist
+                var role = roleManager.FindByName(roleName);
+                if (role == null)
+                {
+                    role = new IdentityRole(roleName);
+                    var roleresult = roleManager.Create(role);
+                }
+                var user = userManager.FindByName(name);
+                if (user == null)
+                {
+                    user = new ApplicationUser
+                    {
+                        UserName = name,
+                        Email = name,
+                        FirstName = "Admin",
+                        LastName = "Admin",
+                        DateOfBirth = new DateTime(2015, 1, 1),
+                        Address = new Address
+                        {
+                            AddressLine1 = "1 Admin Road",
+                            Town = "Town",
+                            Country = "Country",
+                            PostCode = "PostCode"
+                        }
+                    };
+                    var result = userManager.Create(user, password);
+                    result = userManager.SetLockoutEnabled(user.Id, false);
+                }
+                //add user admin to role admin if not already added
+                var rolesForUser = userManager.GetRoles(user.Id);
+                if (!rolesForUser.Contains(role.Name))
+                {
+                    var result = userManager.AddToRole(user.Id, role.Name);
+                }
+                const string userRoleName = "Users";
+                role = roleManager.FindByName(userRoleName);
+                if (role == null)
+                {
+                    role = new IdentityRole(userRoleName);
+                    var roleresult = roleManager.Create(role);
+                }
+            }
         }
     }
 }
