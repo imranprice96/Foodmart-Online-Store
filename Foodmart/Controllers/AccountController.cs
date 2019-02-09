@@ -65,12 +65,29 @@ namespace Foodmart.Controllers
             {
                 return View(model);
             }
+            //check if a user was previously logged in wihtout logging out. 
+            bool userWasLoggedIn = false;
+            if (!string.IsNullOrWhiteSpace(User.Identity.Name))
+            {
+                userWasLoggedIn = true;
+            }
             // This doesn't count login failures towards account lockout
-            // To enable password failures to trigger account lockout, change to shouldLockout: true
+            // To enable password failures to trigger account lockout, change to //shouldLockout: true
             var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
             switch (result)
             {
                 case SignInStatus.Success:
+                    //this is needed to ensure that the previous user's basket is not carried over
+                    if (userWasLoggedIn)
+                    {
+                        Session.Abandon();
+                    }
+                    Basket basket = Basket.GetBasket();
+                    //if there was no previously logged in user migrate the basket from GUID to the //username
+                    if (!userWasLoggedIn)
+                    {
+                        basket.MigrateBasket(model.Email);
+                    }
                     return RedirectToLocal(returnUrl);
                 case SignInStatus.LockedOut:
                     return View("Lockout");
@@ -79,6 +96,7 @@ namespace Foodmart.Controllers
                 case SignInStatus.Failure:
                 default:
                     ModelState.AddModelError("", "Invalid login attempt.");
+                    ViewBag.ReturnUrl = returnUrl;
                     return View(model);
             }
         }
@@ -153,8 +171,9 @@ namespace Foodmart.Controllers
                 {
                     await UserManager.AddToRoleAsync(user.Id, "Users");
                     await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                    Basket basket = Basket.GetBasket();
+                    basket.MigrateBasket(model.Email);
                     return RedirectToLocal(returnUrl);
-                    //return RedirectToAction("Index", "Home");
                 }
                 ViewBag.ReturnUrl = returnUrl;
                 AddErrors(result);
@@ -360,6 +379,7 @@ namespace Foodmart.Controllers
         public ActionResult LogOff()
         {
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+            Session.Abandon();
             return RedirectToAction("Index", "Home");
         }
         //
