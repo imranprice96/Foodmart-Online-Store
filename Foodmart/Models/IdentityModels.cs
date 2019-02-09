@@ -6,12 +6,27 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using System.Web;
 using Microsoft.Owin;
-
+using System.ComponentModel.DataAnnotations;
+using System;
 namespace Foodmart.Models
 {
     // You can add profile data for the user by adding more properties to your ApplicationUser class, please visit http://go.microsoft.com/fwlink/?LinkID=317594 to learn more.
     public class ApplicationUser : IdentityUser
     {
+        [Required]
+        [Display(Name = "First Name")]
+        [StringLength(50)]
+        public string FirstName { get; set; }
+        [Required]
+        [Display(Name = "Last Name")]
+        [StringLength(50)]
+        public string LastName { get; set; }
+        [Required]
+        [DataType(DataType.Date)]
+        [Display(Name = "Date of birth")]
+        [DisplayFormat(DataFormatString = "{0:d}")]
+        public DateTime DateOfBirth { get; set; }
+        public Address Address { get; set; }
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
         {
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
@@ -74,10 +89,26 @@ namespace Foodmart.Models
                 user = new ApplicationUser
                 {
                     UserName = name,
-                    Email = name
+                    Email = name,
+                    FirstName = "Admin",
+                    LastName = "Admin",
+                    DateOfBirth = new DateTime(2015, 1, 1),
+                    Address = new Address
+                    {
+                        AddressLine1 = "1 Admin Road",
+                        Town = "Town",
+                        Country = "Country",
+                        PostCode = "PostCode"
+                    }
                 };
                 var result = userManager.Create(user, password);
-                result = userManager.SetLockoutEnabled(user.Id, false);
+                const string userRoleName = "Users";
+                role = roleManager.FindByName(userRoleName);
+                if (role == null)
+                {
+                    role = new IdentityRole(userRoleName);
+                    var roleresult = roleManager.Create(role);
+                }
             }
             //add user admin to role admin if not already added
             var rolesForUser = userManager.GetRoles(user.Id);
