@@ -1,0 +1,69 @@
+﻿.navbar {
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: #333;
+  position: relative;
+  //z-index: 1000;
+  min-height: 50px;
+  margin-bottom: 20px;
+  border: 1px solid transparent;
+  display: block;
+  border-radius: 4px;
+  width:100%;
+  padding-top:10px;
+  font-family: Arial, Helvetica, sans-serif;
+  overflow:hidden;
+}
+
+.navbar a{
+  //float: left;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+}
+
+.navbar-header{
+    float: left;
+    padding:2.5px;
+    padding-bottom:20px;
+    height:100%;
+    width:10%;
+}
+
+.navbar-header a{
+    font-size:36px;
+}
+
+.navbar-collapse.collapse{
+    overflow:hidden;
+    float:right;
+    overflow:hidden;
+    width:85%;
+}
+
+.navbar-collapse.collapse a:hover{
+    color:cornflowerblue;
+}
+
+.navbar-form.navbar-left{
+    //padding:5px;
+    float: left;
+    //width:100%;
+}
+.navbar-form.navbar-left *{
+    float:left;
+    padding-right:5px;
+}
+
+.nav.navbar-nav li{
+    float:left;
+    padding:2.5px;
+}
+
+.navbar-right{
+    float:right;
+    padding-bottom:5px;
+}
+
+
