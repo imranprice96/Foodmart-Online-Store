@@ -7,8 +7,12 @@
 <p>
     @(String.IsNullOrWhiteSpace(Model.Search) ? "Showing all" : "You search for " + Model.Search + " found") @Model.Products.TotalItemCount products
     @Html.ActionLink("Create New", "Create")
-   @using (Html.BeginRouteForm("ProductsIndex", FormMethod.Get))
-   {
+  @if (Request.IsAuthenticated && User.IsInRole("Admin"))
+  {
+    @Html.ActionLink("Create New", "Create")
+  }
+@using (Html.BeginRouteForm("ProductsIndex", FormMethod.Get))
+{ 
         <label>Filter by department:</label>
         @Html.DropDownListFor(vm => vm.Department, Model.DepFilterItems, "All");
         <label>Sort By:</label>
@@ -56,9 +60,15 @@
             @Html.DisplayFor(modelItem => item.Price)
         </td>
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.ID }) |
-            @Html.ActionLink("Details", "Details", new { id=item.ID }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.ID })
+            @if (Request.IsAuthenticated && User.IsInRole("Admin"))
+            {
+                @Html.ActionLink("Edit", "Edit", new { id = item.ID })
+                @Html.Raw(" | ")
+                @Html.ActionLink("Delete", "Delete", new { id = item.ID })
+                @Html.Raw(" | ")
+                
+            }
+            @Html.ActionLink("Details", "Details", new { id = item.ID })
         </td>
     </tr>
 }

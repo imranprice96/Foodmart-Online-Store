@@ -7,7 +7,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Foodmart.Models;
-
+using Foodmart.ViewModels;
 namespace Foodmart.Controllers
 {
     [Authorize]
@@ -15,17 +15,14 @@ namespace Foodmart.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
-
         public ManageController()
         {
         }
-
         public ManageController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
         {
             UserManager = userManager;
             SignInManager = signInManager;
         }
-
         public ApplicationSignInManager SignInManager
         {
             get
@@ -37,7 +34,6 @@ namespace Foodmart.Controllers
                 _signInManager = value; 
             }
         }
-
         public ApplicationUserManager UserManager
         {
             get
@@ -49,32 +45,14 @@ namespace Foodmart.Controllers
                 _userManager = value;
             }
         }
-
         //
         // GET: /Manage/Index
-        public async Task<ActionResult> Index(ManageMessageId? message)
+        public async Task<ActionResult> Index()
         {
-            ViewBag.StatusMessage =
-                message == ManageMessageId.ChangePasswordSuccess ? "Your password has been changed."
-                : message == ManageMessageId.SetPasswordSuccess ? "Your password has been set."
-                : message == ManageMessageId.SetTwoFactorSuccess ? "Your two-factor authentication provider has been set."
-                : message == ManageMessageId.Error ? "An error has occurred."
-                : message == ManageMessageId.AddPhoneSuccess ? "Your phone number was added."
-                : message == ManageMessageId.RemovePhoneSuccess ? "Your phone number was removed."
-                : "";
-
             var userId = User.Identity.GetUserId();
-            var model = new IndexViewModel
-            {
-                HasPassword = HasPassword(),
-                PhoneNumber = await UserManager.GetPhoneNumberAsync(userId),
-                TwoFactor = await UserManager.GetTwoFactorEnabledAsync(userId),
-                Logins = await UserManager.GetLoginsAsync(userId),
-                BrowserRemembered = await AuthenticationManager.TwoFactorBrowserRememberedAsync(userId)
-            };
-            return View(model);
+            var user = await UserManager.FindByIdAsync(userId);
+            return View(user);
         }
-
         //
         // POST: /Manage/RemoveLogin
         [HttpPost]
@@ -98,14 +76,12 @@ namespace Foodmart.Controllers
             }
             return RedirectToAction("ManageLogins", new { Message = message });
         }
-
         //
         // GET: /Manage/AddPhoneNumber
         public ActionResult AddPhoneNumber()
         {
             return View();
         }
-
         //
         // POST: /Manage/AddPhoneNumber
         [HttpPost]
@@ -129,7 +105,6 @@ namespace Foodmart.Controllers
             }
             return RedirectToAction("VerifyPhoneNumber", new { PhoneNumber = model.Number });
         }
-
         //
         // POST: /Manage/EnableTwoFactorAuthentication
         [HttpPost]
@@ -144,7 +119,6 @@ namespace Foodmart.Controllers
             }
             return RedirectToAction("Index", "Manage");
         }
-
         //
         // POST: /Manage/DisableTwoFactorAuthentication
         [HttpPost]
@@ -159,7 +133,6 @@ namespace Foodmart.Controllers
             }
             return RedirectToAction("Index", "Manage");
         }
-
         //
         // GET: /Manage/VerifyPhoneNumber
         public async Task<ActionResult> VerifyPhoneNumber(string phoneNumber)
@@ -168,7 +141,6 @@ namespace Foodmart.Controllers
             // Send an SMS through the SMS provider to verify the phone number
             return phoneNumber == null ? View("Error") : View(new VerifyPhoneNumberViewModel { PhoneNumber = phoneNumber });
         }
-
         //
         // POST: /Manage/VerifyPhoneNumber
         [HttpPost]
@@ -193,7 +165,6 @@ namespace Foodmart.Controllers
             ModelState.AddModelError("", "Failed to verify phone");
             return View(model);
         }
-
         //
         // POST: /Manage/RemovePhoneNumber
         [HttpPost]
@@ -212,14 +183,12 @@ namespace Foodmart.Controllers
             }
             return RedirectToAction("Index", new { Message = ManageMessageId.RemovePhoneSuccess });
         }
-
         //
         // GET: /Manage/ChangePassword
         public ActionResult ChangePassword()
         {
             return View();
         }
-
         //
         // POST: /Manage/ChangePassword
         [HttpPost]
@@ -243,14 +212,12 @@ namespace Foodmart.Controllers
             AddErrors(result);
             return View(model);
         }
-
         //
         // GET: /Manage/SetPassword
         public ActionResult SetPassword()
         {
             return View();
         }
-
         //
         // POST: /Manage/SetPassword
         [HttpPost]
@@ -271,11 +238,9 @@ namespace Foodmart.Controllers
                 }
                 AddErrors(result);
             }
-
             // If we got this far, something failed, redisplay form
             return View(model);
         }
-
         //
         // GET: /Manage/ManageLogins
         public async Task<ActionResult> ManageLogins(ManageMessageId? message)
@@ -298,7 +263,6 @@ namespace Foodmart.Controllers
                 OtherLogins = otherLogins
             });
         }
-
         //
         // POST: /Manage/LinkLogin
         [HttpPost]
@@ -308,7 +272,6 @@ namespace Foodmart.Controllers
             // Request a redirect to the external login provider to link a login for the current user
             return new AccountController.ChallengeResult(provider, Url.Action("LinkLoginCallback", "Manage"), User.Identity.GetUserId());
         }
-
         //
         // GET: /Manage/LinkLoginCallback
         public async Task<ActionResult> LinkLoginCallback()
@@ -321,7 +284,6 @@ namespace Foodmart.Controllers
             var result = await UserManager.AddLoginAsync(User.Identity.GetUserId(), loginInfo.Login);
             return result.Succeeded ? RedirectToAction("ManageLogins") : RedirectToAction("ManageLogins", new { Message = ManageMessageId.Error });
         }
-
         protected override void Dispose(bool disposing)
         {
             if (disposing && _userManager != null)
@@ -329,14 +291,44 @@ namespace Foodmart.Controllers
                 _userManager.Dispose();
                 _userManager = null;
             }
-
             base.Dispose(disposing);
         }
-
-#region Helpers
+        //GET: Manage/Edit
+        public async Task<ActionResult> Edit()
+        {
+            var userId = User.Identity.GetUserId();
+            var user = await UserManager.FindByIdAsync(userId);
+            var model = new EditUserViewModel
+            {
+                Email = user.Email,
+                DateOfBirth = user.DateOfBirth,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Address = user.Address
+            };
+            return View(model);
+        }
+        //POST: Manage/Edit/
+        [HttpPost, ActionName("Edit")]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> EditPost()
+        {
+            var userId = User.Identity.GetUserId();
+            var userToUpdate = await UserManager.FindByIdAsync(userId);
+            if (TryUpdateModel(userToUpdate, "", new string[] {
+                "FirstName",
+                "LastName",
+                "DateOfBirth",
+                "Address" }))
+            {
+                await UserManager.UpdateAsync(userToUpdate);
+                return RedirectToAction("Index");
+            }
+            return View();
+        }
+        #region Helpers
         // Used for XSRF protection when adding external logins
         private const string XsrfKey = "XsrfId";
-
         private IAuthenticationManager AuthenticationManager
         {
             get
@@ -344,7 +336,6 @@ namespace Foodmart.Controllers
                 return HttpContext.GetOwinContext().Authentication;
             }
         }
-
         private void AddErrors(IdentityResult result)
         {
             foreach (var error in result.Errors)
@@ -352,7 +343,6 @@ namespace Foodmart.Controllers
                 ModelState.AddModelError("", error);
             }
         }
-
         private bool HasPassword()
         {
             var user = UserManager.FindById(User.Identity.GetUserId());
@@ -362,7 +352,6 @@ namespace Foodmart.Controllers
             }
             return false;
         }
-
         private bool HasPhoneNumber()
         {
             var user = UserManager.FindById(User.Identity.GetUserId());
@@ -372,7 +361,6 @@ namespace Foodmart.Controllers
             }
             return false;
         }
-
         public enum ManageMessageId
         {
             AddPhoneSuccess,
@@ -383,7 +371,6 @@ namespace Foodmart.Controllers
             RemovePhoneSuccess,
             Error
         }
-
 #endregion
     }
 }

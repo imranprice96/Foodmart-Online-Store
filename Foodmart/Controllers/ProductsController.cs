@@ -10,10 +10,12 @@ using System.Collections.Generic;
 using PagedList;
 namespace Foodmart.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class ProductsController : Controller
     {
         private StoreContext db = new StoreContext();
         // GET: Products
+        [AllowAnonymous]
         public ActionResult Index(string department, string search, string sortBy,int? page)
         {
             ProductIndexViewModel viewModel = new ProductIndexViewModel();
@@ -63,6 +65,7 @@ namespace Foodmart.Controllers
             return View(viewModel);
         }
         // GET: Products/Details/5
+        [AllowAnonymous]
         public ActionResult Details(int? id)
         {
             if (id == null)

@@ -9,5 +9,7 @@ namespace Foodmart.OSDB
         public DbSet<Department> Departments { get; set; }
         public DbSet<ProductImage> ProductImages { get; set; }
         public DbSet<ProductImageMapping> ProductImageMappings { get; set; }
+
+        public System.Data.Entity.DbSet<Foodmart.ViewModels.EditUserViewModel> EditUserViewModels { get; set; }
     }
 }

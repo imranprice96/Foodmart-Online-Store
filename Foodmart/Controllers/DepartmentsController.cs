@@ -7,11 +7,13 @@ using Foodmart.OSDB;
 
 namespace Foodmart.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class DepartmentsController : Controller
     {
         private StoreContext db = new StoreContext();
 
         // GET: Departments
+        [AllowAnonymous]
         public ActionResult Index()
         {
             //return View(db.Departments.ToList());
