@@ -9,7 +9,7 @@ namespace Foodmart
     {
         public const string ProductImagePath = "~/Content/ProductImages/";
         public const string ProductThumbnailPath = "~/Content/ProductImages/Thumbnails/";
-        public const int PagedItems = 10;
+        public const int PagedItems = 5;
         public const int NumberOfProductImages = 5;
     }
 }

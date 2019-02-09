@@ -1,9 +1,8 @@
 ﻿.navbar {
   font-family: Arial, Helvetica, sans-serif;
-  background-color: #333;
+  background-color: #0f51bc;
   position: relative;
   //z-index: 1000;
-  min-height: 50px;
   margin-bottom: 20px;
   border: 1px solid transparent;
   display: block;
@@ -12,7 +11,8 @@
   padding-top:10px;
   font-family: Arial, Helvetica, sans-serif;
   overflow:hidden;
-}
+  min-height:80px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);}
 
 .navbar a{
   //float: left;
@@ -43,7 +43,7 @@
 }
 
 .navbar-collapse.collapse a:hover{
-    color:cornflowerblue;
+    color:#bc540f;
 }
 
 .navbar-form.navbar-left{
